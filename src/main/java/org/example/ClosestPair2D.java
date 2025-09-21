@@ -2,7 +2,7 @@ package org.example;
 
 import java.util.*;
 
-public class ClosestPairofPoints {
+public class ClosestPair2D {
 
     public record Point(double x, double y) {}
     public record Pair(Point first, Point second, double distance) {}
