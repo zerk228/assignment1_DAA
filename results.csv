@@ -1,0 +1,5 @@
+algorithmName;runTime;counter;depth;allocation
+MergeSort;21681800;128370;11;1
+QuickSort;24284800;152099;1;0
+DeterministicSelect;27423200;20363;1;0
+ClosestPair2D;98536600;12997;13;12285

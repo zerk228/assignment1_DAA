@@ -6,7 +6,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClosestPair2DTest{
+class ClosestPair2DTest {
 
     @Test
     void simpleTriangle() {
@@ -16,8 +16,13 @@ class ClosestPair2DTest{
                 new ClosestPair2D.Point(0, 1)
         );
 
-        ClosestPair2D.Pair result = ClosestPair2D.findClosestPair(points);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        ClosestPair2D.Pair result = ClosestPair2D.findClosestPair(points, metrics);
+
         assertEquals(1.0, result.distance(), 1e-9);
+        assertTrue(metrics.comparisons > 0, "Должны быть выполнены сравнения");
     }
 
     @Test
@@ -28,7 +33,10 @@ class ClosestPair2DTest{
             points.add(new ClosestPair2D.Point(random.nextDouble(), random.nextDouble()));
         }
 
-        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points, metrics);
 
         double bruteForce = Double.POSITIVE_INFINITY;
         for (int i = 0; i < points.size(); i++) {
@@ -40,6 +48,7 @@ class ClosestPair2DTest{
         }
 
         assertEquals(bruteForce, fast.distance(), 1e-9);
+        assertTrue(metrics.comparisons > 0, "Метрика сравнений должна увеличиваться");
     }
 
     @Test
@@ -49,16 +58,22 @@ class ClosestPair2DTest{
                 new ClosestPair2D.Point(6, 8)
         );
 
-        ClosestPair2D.Pair result = ClosestPair2D.findClosestPair(points);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        ClosestPair2D.Pair result = ClosestPair2D.findClosestPair(points, metrics);
+
         assertEquals(5.0, result.distance(), 1e-9);
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
     void throwsOnInvalidInput() {
+        Metrics metrics = new Metrics();
         assertThrows(IllegalArgumentException.class, () ->
-                ClosestPair2D.findClosestPair(Collections.emptyList()));
+                ClosestPair2D.findClosestPair(Collections.emptyList(), metrics));
         assertThrows(IllegalArgumentException.class, () ->
-                ClosestPair2D.findClosestPair(List.of(new ClosestPair2D.Point(0, 0))));
+                ClosestPair2D.findClosestPair(List.of(new ClosestPair2D.Point(0, 0)), metrics));
     }
 
     @Test
@@ -69,7 +84,10 @@ class ClosestPair2DTest{
             points.add(new ClosestPair2D.Point(rnd.nextDouble(), rnd.nextDouble()));
         }
 
-        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points, metrics);
 
         double bruteForce = Double.POSITIVE_INFINITY;
         for (int i = 0; i < points.size(); i++) {
@@ -81,6 +99,7 @@ class ClosestPair2DTest{
         }
 
         assertEquals(bruteForce, fast.distance(), 1e-9);
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -91,10 +110,13 @@ class ClosestPair2DTest{
             points.add(new ClosestPair2D.Point(rnd.nextDouble(), rnd.nextDouble()));
         }
 
-        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        ClosestPair2D.Pair fast = ClosestPair2D.findClosestPair(points, metrics);
 
         assertNotNull(fast, "Алгоритм должен вернуть пару даже на 100k точках");
         assertTrue(fast.distance() >= 0, "Расстояние не может быть отрицательным");
+        assertTrue(metrics.comparisons > 0, "При 100k точках должны быть сравнения");
     }
-
 }

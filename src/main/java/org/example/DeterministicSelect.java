@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class DeterministicSelect {
 
-    public static int select(int[] array, int orderStatisticIndex) {
+    public static int select(int[] array, int orderStatisticIndex, Metrics metrics) {
         if (array == null || array.length == 0) {
             throw new IllegalArgumentException("Array is empty");
         }
@@ -12,32 +12,39 @@ public class DeterministicSelect {
             throw new IllegalArgumentException("Invalid k index: " + orderStatisticIndex);
         }
 
-        return select(array, 0, array.length - 1, orderStatisticIndex);
+        return select(array, 0, array.length - 1, orderStatisticIndex, metrics);
     }
 
-    private static int select(int[] array, int leftIndex, int rightIndex, int k) {
-        while (true) {
-            if (leftIndex == rightIndex) {
-                return array[leftIndex];
-            }
+    private static int select(int[] array, int leftIndex, int rightIndex, int k, Metrics metrics) {
+        DepthTracker.enter();
+        try{
+            while (true) {
+                if (leftIndex == rightIndex) {
+                    return array[leftIndex];
+                }
 
-            int pivotValue = medianOfMedians(array, leftIndex, rightIndex);
-            int pivotIndex = partition(array, leftIndex, rightIndex, pivotValue);
+                int pivotValue = medianOfMedians(array, leftIndex, rightIndex, metrics);
+                int pivotIndex = partition(array, leftIndex, rightIndex, pivotValue, metrics);
 
-            int rank = pivotIndex - leftIndex;
+                int rank = pivotIndex - leftIndex;
 
-            if (k == rank) {
-                return array[pivotIndex];
-            } else if (k < rank) {
-                rightIndex = pivotIndex - 1;
-            } else {
-                k = k - (rank + 1);
-                leftIndex = pivotIndex + 1;
+                if (k == rank) {
+                    return array[pivotIndex];
+                } else if (k < rank) {
+                    rightIndex = pivotIndex - 1;
+                } else {
+                    k = k - (rank + 1);
+                    leftIndex = pivotIndex + 1;
+                }
             }
         }
+        finally{
+            DepthTracker.exit();
+        }
+
     }
 
-    private static int medianOfMedians(int[] array, int leftIndex, int rightIndex) {
+    private static int medianOfMedians(int[] array, int leftIndex, int rightIndex, Metrics metrics) {
         int n = rightIndex - leftIndex + 1;
 
         if (n <= 5) {
@@ -54,12 +61,13 @@ public class DeterministicSelect {
             numGroups++;
         }
 
-        return medianOfMedians(array, leftIndex, leftIndex + numGroups - 1);
+        return medianOfMedians(array, leftIndex, leftIndex + numGroups - 1, metrics);
     }
 
-    private static int partition(int[] array, int leftIndex, int rightIndex, int pivotValue) {
+    private static int partition(int[] array, int leftIndex, int rightIndex, int pivotValue, Metrics metrics) {
         int pivotIndex = leftIndex;
         for (int i = leftIndex; i <= rightIndex; i++) {
+            metrics.comparisons++; // сравнение для поиска pivot
             if (array[i] == pivotValue) {
                 pivotIndex = i;
                 break;
@@ -70,6 +78,7 @@ public class DeterministicSelect {
 
         int storeIndex = leftIndex;
         for (int i = leftIndex; i < rightIndex; i++) {
+            metrics.comparisons++; // сравнение с pivot
             if (array[i] < pivotValue) {
                 swap(array, storeIndex, i);
                 storeIndex++;

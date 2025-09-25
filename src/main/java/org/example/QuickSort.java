@@ -4,32 +4,33 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class QuickSort {
 
-    public static void sort(int[] array) {
+    public static void sort(int[] array, Metrics metrics) {
         if (array == null || array.length < 2) {
             return;
         }
-        quickSort(array, 0, array.length - 1);
+        quickSort(array, 0, array.length - 1, metrics);
     }
 
-    private static void quickSort(int[] array, int leftIndex, int rightIndex) {
+    private static void quickSort(int[] array, int leftIndex, int rightIndex, Metrics metrics) {
         while (leftIndex < rightIndex) {
             DepthTracker.enter();
-            int pivotIndex = partition(array, leftIndex, rightIndex);
+            int pivotIndex = partition(array, leftIndex, rightIndex, metrics);
             DepthTracker.exit();
+
             int leftPartitionSize = pivotIndex - leftIndex;
             int rightPartitionSize = rightIndex - pivotIndex;
 
             if (leftPartitionSize < rightPartitionSize) {
-                quickSort(array, leftIndex, pivotIndex - 1);
+                quickSort(array, leftIndex, pivotIndex - 1, metrics);
                 leftIndex = pivotIndex + 1;
             } else {
-                quickSort(array, pivotIndex + 1, rightIndex);
+                quickSort(array, pivotIndex + 1, rightIndex, metrics);
                 rightIndex = pivotIndex - 1;
             }
         }
     }
 
-    private static int partition(int[] array, int leftIndex, int rightIndex) {
+    private static int partition(int[] array, int leftIndex, int rightIndex, Metrics metrics) {
         int pivotIndex = ThreadLocalRandom.current().nextInt(leftIndex, rightIndex + 1);
         swap(array, pivotIndex, rightIndex);
 
@@ -37,6 +38,7 @@ public class QuickSort {
         int i = leftIndex;
 
         for (int j = leftIndex; j < rightIndex; j++) {
+            metrics.comparisons++; // считаем сравнение с pivot
             if (array[j] <= pivotValue) {
                 swap(array, i, j);
                 i++;

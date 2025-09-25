@@ -16,10 +16,15 @@ class DeterministicSelectTest {
         Arrays.sort(sorted);
 
         int medianIndex = sorted.length / 2;
-        int value = DeterministicSelect.select(array.clone(), medianIndex);
+
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        int value = DeterministicSelect.select(array.clone(), medianIndex, metrics);
 
         assertEquals(sorted[medianIndex], value,
                 "Median должен совпадать с отсортированным массивом");
+        assertTrue(metrics.comparisons > 0, "Сравнения должны учитываться");
     }
 
     @Test
@@ -28,9 +33,13 @@ class DeterministicSelectTest {
         int[] sorted = array.clone();
         Arrays.sort(sorted);
 
-        int min = DeterministicSelect.select(array.clone(), 0);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        int min = DeterministicSelect.select(array.clone(), 0, metrics);
 
         assertEquals(sorted[0], min, "Минимум должен совпадать");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -39,9 +48,13 @@ class DeterministicSelectTest {
         int[] sorted = array.clone();
         Arrays.sort(sorted);
 
-        int max = DeterministicSelect.select(array.clone(), sorted.length - 1);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        int max = DeterministicSelect.select(array.clone(), sorted.length - 1, metrics);
 
         assertEquals(sorted[sorted.length - 1], max, "Максимум должен совпадать");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -55,26 +68,36 @@ class DeterministicSelectTest {
             Arrays.sort(sorted);
 
             int k = rnd.nextInt(n);
-            int result = DeterministicSelect.select(array.clone(), k);
 
-            assertEquals(sorted[k], result,"DeterministicSelect должен совпадать с Arrays.sort");
+            Metrics metrics = new Metrics();
+            DepthTracker.reset();
+
+            int result = DeterministicSelect.select(array.clone(), k, metrics);
+
+            assertEquals(sorted[k], result,
+                    "DeterministicSelect должен совпадать с Arrays.sort");
+            assertTrue(metrics.comparisons > 0);
         }
     }
 
     @Test
     void throwsExceptionOnInvalidK() {
         int[] array = {1, 2, 3};
+        Metrics metrics = new Metrics();
+
         assertThrows(IllegalArgumentException.class,
-                () -> DeterministicSelect.select(array, -1));
+                () -> DeterministicSelect.select(array, -1, metrics));
         assertThrows(IllegalArgumentException.class,
-                () -> DeterministicSelect.select(array, 3));
+                () -> DeterministicSelect.select(array, 3, metrics));
     }
 
     @Test
     void throwsExceptionOnEmptyArray() {
         int[] array = {};
+        Metrics metrics = new Metrics();
+
         assertThrows(IllegalArgumentException.class,
-                () -> DeterministicSelect.select(array, 0));
+                () -> DeterministicSelect.select(array, 0, metrics));
     }
 
     @Test
@@ -88,11 +111,15 @@ class DeterministicSelectTest {
             Arrays.sort(sorted);
 
             int k = rnd.nextInt(n);
-            int result = DeterministicSelect.select(array.clone(), k);
+
+            Metrics metrics = new Metrics();
+            DepthTracker.reset();
+
+            int result = DeterministicSelect.select(array.clone(), k, metrics);
 
             assertEquals(sorted[k], result,
                     "DeterministicSelect должен совпадать с Arrays.sort");
+            assertTrue(metrics.comparisons > 0);
         }
     }
-
 }

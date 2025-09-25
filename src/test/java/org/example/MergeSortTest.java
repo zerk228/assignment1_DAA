@@ -15,25 +15,37 @@ class MergeSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Массив должен быть отсортирован по возрастанию");
+        assertTrue(metrics.comparisons > 0, "Счётчик сравнений должен увеличиться");
     }
 
     @Test
     void handlesEmptyArray() {
         int[] array = {};
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(new int[]{}, array, "Пустой массив должен остаться пустым");
+        assertEquals(0, metrics.comparisons, "Для пустого массива сравнений быть не должно");
     }
 
     @Test
     void handlesSingleElement() {
         int[] array = {42};
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(new int[]{42}, array, "Один элемент не меняется после сортировки");
+        assertEquals(0, metrics.comparisons, "Для одного элемента сравнений быть не должно");
     }
 
     @Test
@@ -41,9 +53,13 @@ class MergeSortTest {
         int[] array = {1, 2, 3, 4, 5};
         int[] expected = array.clone();
 
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Уже отсортированный массив должен остаться неизменным");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -52,9 +68,13 @@ class MergeSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Массив с дубликатами должен сортироваться корректно");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -64,8 +84,12 @@ class MergeSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
-        MergeSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        MergeSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Большой массив должен быть отсортирован так же, как Arrays.sort");
+        assertTrue(metrics.comparisons > 0, "На большом массиве должно быть много сравнений");
     }
 }

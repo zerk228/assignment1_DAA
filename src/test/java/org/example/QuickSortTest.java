@@ -15,9 +15,13 @@ class QuickSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Массив должен быть отсортирован по возрастанию");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -25,9 +29,13 @@ class QuickSortTest {
         int[] array = {1, 2, 3, 4, 5};
         int[] expected = array.clone();
 
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Уже отсортированный массив не должен измениться");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -35,25 +43,37 @@ class QuickSortTest {
         int[] array = {5, 5, 5, 5};
         int[] expected = array.clone();
 
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Массив из одинаковых элементов должен оставаться неизменным");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
     void handlesEmptyArray() {
         int[] array = {};
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(new int[]{}, array, "Пустой массив должен остаться пустым");
+        assertEquals(0, metrics.comparisons, "Для пустого массива сравнений быть не должно");
     }
 
     @Test
     void handlesSingleElement() {
         int[] array = {42};
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(new int[]{42}, array, "Один элемент не должен измениться");
+        assertEquals(0, metrics.comparisons, "Для одного элемента сравнений быть не должно");
     }
 
     @Test
@@ -63,9 +83,13 @@ class QuickSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
-        QuickSort.sort(array);
+        Metrics metrics = new Metrics();
+        DepthTracker.reset();
+
+        QuickSort.sort(array, metrics);
 
         assertArrayEquals(expected, array, "Большой массив должен сортироваться корректно");
+        assertTrue(metrics.comparisons > 0);
     }
 
     @Test
@@ -75,8 +99,10 @@ class QuickSortTest {
         int[] expected = array.clone();
         Arrays.sort(expected);
 
+        Metrics metrics = new Metrics();
         DepthTracker.reset();
-        QuickSort.sort(array);
+
+        QuickSort.sort(array, metrics);
         int maxDepth = DepthTracker.getMaxDepth();
 
         assertArrayEquals(expected, array, "QuickSort должен сортировать корректно");
@@ -84,6 +110,7 @@ class QuickSortTest {
         int bound = 2 * (31 - Integer.numberOfLeadingZeros(n));
         assertTrue(maxDepth <= bound + 10,
                 "Глубина рекурсии должна быть O(log n), но была " + maxDepth);
-    }
 
+        assertTrue(metrics.comparisons > 0, "На 32k элементов должно быть много сравнений");
+    }
 }
